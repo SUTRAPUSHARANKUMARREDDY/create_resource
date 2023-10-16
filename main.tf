@@ -1,5 +1,10 @@
 provider "azurerm" {
   features {}
+
+  client_id       = "f7ab13b6-5785-4ad1-86ad-d10e972c9df8"
+  client_secret   = "X0B8Q~dAhodDEI~wTp~VP-SOKWTirLH1jD2uDb4a"
+  tenant_id       = "86562993-99f8-4b58-b41c-4e59212da023"
+  subscription_id = "ef3f9b00-a804-41f7-8f0e-23191f0ed880"
 }
 
 # 1. Create Resource Group
