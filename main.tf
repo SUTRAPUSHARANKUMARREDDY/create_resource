@@ -51,7 +51,8 @@ resource "azurerm_network_security_rule" "example" {
 
 # 4. Create Public IP
 resource "azurerm_public_ip" "example" {
-  name                = "example-publicip"
+  count               = 2
+  name                = "example-publicip-${count.index}"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
   allocation_method   = "Dynamic"
@@ -59,7 +60,8 @@ resource "azurerm_public_ip" "example" {
 
 # 5. Create Network Interface
 resource "azurerm_network_interface" "example" {
-  name                = "example-nic"
+  count               = 2
+  name                = "example-nic-${count.index}"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
@@ -67,28 +69,30 @@ resource "azurerm_network_interface" "example" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.example.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.example.id
+    public_ip_address_id          = azurerm_public_ip.example[count.index].id
   }
 }
 
 resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.example.id
+  count                     = 2
+  network_interface_id      = azurerm_network_interface.example[count.index].id
   network_security_group_id = azurerm_network_security_group.example.id
 }
 
 # 6. Create VM
 resource "azurerm_virtual_machine" "example" {
-  name                  = "example-vm"
+  count                 = 2
+  name                  = "sharan-test-${count.index}"
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
-  network_interface_ids = [azurerm_network_interface.example.id]
+  network_interface_ids = [azurerm_network_interface.example[count.index].id]
   vm_size               = "Standard_F2"
 
   storage_os_disk {
-    name              = "example-osdisk"
+    name              = "sharan-test-osdisk-${count.index}"
     caching           = "ReadWrite"
     create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"  # Adjusted the disk type here
+    managed_disk_type = "Standard_LRS"
   }
 
   storage_image_reference {
@@ -99,7 +103,7 @@ resource "azurerm_virtual_machine" "example" {
   }
 
   os_profile {
-    computer_name  = "example-vm"
+    computer_name  = "sharan-test-${count.index}"
     admin_username = "adminuser"
     admin_password = "Password1234!"
   }
@@ -108,3 +112,4 @@ resource "azurerm_virtual_machine" "example" {
     disable_password_authentication = false
   }
 }
+
